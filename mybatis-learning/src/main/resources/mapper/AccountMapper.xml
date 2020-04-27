@@ -17,4 +17,101 @@
     <select id="findAccountById" parameterType="int" resultType="model.Account">
         SELECT * FROM account WHERE id = #{id}
     </select>
+
+    <select id="findAccountByNameWith$" parameterType="string" resultType="model.Account">
+        SELECT * FROM account WHERE `name` like '%${value}%'
+    </select>
+
+    <select id="findAccountByNameWith#" parameterType="string" resultType="model.Account">
+        SELECT * FROM account WHERE `name` like #{value}
+    </select>
+
+    <insert id="insertAccount" parameterType="model.Account">
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+          SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into account (`name`,`balance`) values (#{name},#{balance})
+    </insert>
+
+    <update id="updateAccount" parameterType="model.Account">
+        update account
+        <set>
+            <if test="name != null and name !=''">
+                `name` = #{name} ,
+            </if>
+            <if test="balance > 0">
+                balance = #{balance} ,
+            </if>
+        </set>
+        where id= #{id}
+    </update>
+
+    <delete id="deleteAccountById" parameterType="int">
+        delete from account where `id` = #{id}
+    </delete>
+
+    <select id="findAccountByNameAndBalacne" parameterType="hashmap" resultType="model.Account">
+        SELECT * FROM account WHERE `name` = #{name} and balance = #{balance}
+    </select>
+
+    <select id="findAccountCount"  resultType="int">
+        SELECT count(id) FROM account
+    </select>
+
+    <select id="findAll"  resultType="model.Account">
+        SELECT * FROM account
+    </select>
+
+    <resultMap id="accountMap" type="model.Account">
+        <result column="_id" property="id"></result>
+        <result column="_name" property="name"></result>
+        <result column="_balance" property="balance"></result>
+    </resultMap>
+
+    <select id="findAccountByIdWithResultmap" parameterType="int" resultMap="accountMap" >
+        select id as _id,`name` as `_name`, balance as _balance from account where id=#{id}
+    </select>
+
+    <select id="findAccounts" resultType="model.Account" parameterType="model.Account">
+        select * from account
+        <where>
+            <if test="name!=null and name != ''">
+                and name=#{name}
+            </if>
+            <if test="balance > 0">
+                and balance=#{balance}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAccountsByIds" resultType="model.Account" parameterType="list">
+        select * from account
+        <where>
+            <foreach collection="list" item="id" open="And id in (" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+
+    <sql id="select_account_with_choose">
+        <where>
+            <choose>
+                <when test="name != null and name !=''">
+                    and name=#{name}
+                </when>
+                <when test="balance > 0">
+                    and balance=#{balance}
+                </when>
+                <otherwise>
+                    and id=1
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="findAccountsWithChoose" resultType="model.Account" parameterType="model.Account">
+        select * from account
+        <include refid="select_account_with_choose"></include>
+    </select>
 </mapper>

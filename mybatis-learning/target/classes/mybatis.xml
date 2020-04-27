@@ -3,21 +3,31 @@
                 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <!-- 配置mybatis的环境信息 -->
+    <!--引入db.properties文件-->
+    <properties resource="db.properties" />
+
+    <settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+
+    <typeAliases>
+        <package name="model" />
+    </typeAliases>
+
     <environments default="development">
         <environment id="development">
-            <!-- 配置JDBC事务控制，由mybatis进行管理 -->
             <transactionManager type="JDBC"></transactionManager>
-            <!-- 配置数据源，采用dbcp连接池 -->
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://47.101.57.44:33306/explain_test?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=UTC&amp;rewriteBatchedStatements=true"/>
-                <property name="username" value="root"/>
-                <property name="password" value="123456"/>
+                <!--通过${driver}引入db.properties的值-->
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
             </dataSource>
         </environment>
     </environments>
     <mappers>
-        <mapper resource="mapper/AccountMapper.xml" />
+        <package name="mapper" />
     </mappers>
 </configuration>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.ScoreMapper">
+    
+    <resultMap id="score_student" type="model.Score">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="student_id" property="studentId"></result>
+        <result column="score" property="score"></result>
+        <association property="student" javaType="model.Student">
+            <result column="student_id" property="id"></result>
+            <result column="student_name" property="name"></result>
+        </association>
+    </resultMap>
+    
+    <select id="findScoreById" parameterType="int" resultMap="score_student">
+        SELECT s.*,st.id as student_id,st.`name` as student_name
+        FROM score as s
+        LEFT JOIN student as st ON s.student_id=st.id
+        where s.id=#{id}
+    </select>
+</mapper>
